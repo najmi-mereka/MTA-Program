@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MTA Program Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* ─── RESET & BASE ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal:       #1b7f79;
+    --teal-dark:  #145c57;
+    --teal-light: #e8f5f4;
+    --teal-mid:   #2aa89f;
+    --gold:       #e8a020;
+    --gold-light: #fef6e4;
+    --ink:        #1a1a2e;
+    --ink-mid:    #3d3d5c;
+    --muted:      #6b7280;
+    --bg:         #f4f7f6;
+    --white:      #ffffff;
+    --border:     #dde5e4;
+    --success:    #16a34a;
+    --warn:       #d97706;
+    --danger:     #dc2626;
+    --radius:     14px;
+    --shadow:     0 4px 24px rgba(27,127,121,.10);
+    --shadow-lg:  0 12px 48px rgba(27,127,121,.18);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    min-height: 100vh;
+    letter-spacing: -.01em;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Outfit', sans-serif; letter-spacing: -.02em; }
+
+  /* ─── VIEWS ─── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ════════════════════════════════════════
+     HOME PAGE
+  ════════════════════════════════════════ */
+  /* NAV */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo { display: flex; align-items: center; gap: .6rem; }
+  .nav-logo .dot {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-mid));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-weight: 800;
+    color: white; font-size: .85rem; letter-spacing: -.5px;
+  }
+  .nav-logo span { font-family:'Outfit',sans-serif; font-weight:700; font-size:1rem; color:var(--ink); }
+  .nav-cta {
+    background: var(--teal); color: white; border: none; border-radius: 8px;
+    padding: .5rem 1.2rem; font-size: .88rem; font-weight: 600;
+    cursor: pointer; transition: background .2s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .nav-cta:hover { background: var(--teal-dark); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #0d4f4b 0%, #1b7f79 45%, #2aa89f 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 6rem 2rem 4rem;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(42,168,159,.3) 0%, transparent 50%);
+  }
+  .hero-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; max-width: 1100px; width: 100%;
+    align-items: center; position: relative; z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.9); border-radius: 99px;
+    padding: .3rem .9rem; font-size: .78rem; font-weight: 500;
+    margin-bottom: 1.2rem; letter-spacing: .5px;
+  }
+  .hero-badge .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--gold); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.4); }
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800; color: white;
+    line-height: 1.12; margin-bottom: 1.2rem;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p {
+    color: rgba(255,255,255,.8); font-size: 1.05rem;
+    max-width: 480px; margin-bottom: 2rem; line-height: 1.7;
+  }
+  .hero-btn {
+    display: inline-flex; align-items: center; gap: .6rem;
+    background: var(--gold); color: var(--ink);
+    border: none; border-radius: 12px;
+    padding: 1rem 2rem; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .25s;
+    font-family: 'Outfit', sans-serif; letter-spacing: -.2px;
+    box-shadow: 0 8px 24px rgba(232,160,32,.4);
+  }
+  .hero-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,160,32,.5); }
+  .hero-btn svg { transition: transform .2s; }
+  .hero-btn:hover svg { transform: translateX(4px); }
+
+  /* hero stat cards */
+  .hero-stats {
+    display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem;
+  }
+  .hstat {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 12px; padding: .8rem 1.2rem;
+    text-align: center; flex: 1; min-width: 90px;
+  }
+  .hstat strong {
+    display: block; font-family: 'Outfit',sans-serif;
+    font-size: 1.5rem; font-weight: 800; color: white;
+  }
+  .hstat span { font-size: .76rem; color: rgba(255,255,255,.7); }
+
+  /* portal card */
+  .portal-card {
+    background: white; border-radius: 20px;
+    padding: 2.5rem; box-shadow: var(--shadow-lg);
+  }
+  .portal-card h3 {
+    font-size: 1.3rem; margin-bottom: .4rem; color: var(--ink);
+  }
+  .portal-card p { font-size: .9rem; color: var(--muted); margin-bottom: 1.8rem; }
+  .input-group { position: relative; margin-bottom: 1rem; }
+  .input-group input {
+    width: 100%; padding: .85rem 1rem .85rem 2.8rem;
+    border: 2px solid var(--border); border-radius: 10px;
+    font-size: .95rem; font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: border-color .2s; outline: none; color: var(--ink);
+    background: var(--bg);
+  }
+  .input-group input:focus { border-color: var(--teal); background: white; }
+  .input-group .icon {
+    position: absolute; left: .9rem; top: 50%; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none;
+  }
+  .btn-primary {
+    width: 100%; padding: .9rem; background: var(--teal);
+    color: white; border: none; border-radius: 10px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+    font-family: 'Outfit', sans-serif; transition: background .2s;
+    letter-spacing: -.1px;
+  }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .error-msg {
+    background: #fef2f2; border: 1px solid #fecaca;
+    color: #b91c1c; border-radius: 8px; padding: .6rem 1rem;
+    font-size: .85rem; margin-top: .8rem; display: none;
+  }
+  .lock-note {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .78rem; color: var(--muted); margin-top: 1rem;
+  }
+
+  /* PROGRAM OVERVIEW SECTION */
+  section { padding: 5rem 2rem; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .chip {
+    display: inline-block; background: var(--teal-light);
+    color: var(--teal-dark); border-radius: 99px;
+    padding: .25rem .9rem; font-size: .78rem; font-weight: 600;
+    letter-spacing: .5px; margin-bottom: 1rem; text-transform: uppercase;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800; color: var(--ink);
+    margin-bottom: .5rem; line-height: 1.2;
+  }
+  .section-sub { color: var(--muted); max-width: 620px; margin-bottom: 3rem; }
+
+  /* Overview cards */
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .ov-card {
+    background: var(--teal); color: white;
+    border-radius: var(--radius); padding: 1.8rem;
+    position: relative; overflow: hidden;
+  }
+  .ov-card::after {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+  }
+  .ov-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+  .ov-card p { font-size: .88rem; opacity: .85; line-height: 1.6; }
+  .ov-card .indicator {
+    margin-top: 1.2rem; padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,.2);
+    font-size: .8rem; opacity: .75;
+  }
+  .ov-card .indicator strong { opacity: 1; font-weight: 700; }
+
+  /* Cohort section */
+  .cohort-section { background: var(--ink); }
+  .cohort-section .section-title { color: white; }
+  .cohort-section .section-sub { color: rgba(255,255,255,.6); }
+  .cohort-section .chip { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
+  .cohort-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .cohort-card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: var(--radius); padding: 1.5rem;
+    transition: background .2s;
+  }
+  .cohort-card:hover { background: rgba(255,255,255,.09); }
+  .cohort-card .c-num {
+    font-size: .72rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--teal-mid); margin-bottom: .5rem;
+  }
+  .cohort-card h4 { font-size: 1rem; color: white; margin-bottom: .3rem; }
+  .cohort-card p { font-size: .82rem; color: rgba(255,255,255,.55); line-height: 1.6; }
+  .c-tag {
+    display: inline-block; background: rgba(42,168,159,.2);
+    color: var(--teal-mid); border-radius: 6px;
+    padding: .15rem .5rem; font-size: .72rem; font-weight: 600;
+    margin-top: .7rem;
+  }
+
+  /* CTA BAND */
+  .cta-band {
+    background: linear-gradient(120deg, var(--teal-dark), var(--teal));
+    border-radius: 20px; padding: 3rem; margin: 0 2rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 2rem; max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  .cta-band h2 { font-size: 1.6rem; color: white; margin-bottom: .4rem; }
+  .cta-band p { color: rgba(255,255,255,.75); font-size: .95rem; }
+  .btn-gold {
+    background: var(--gold); color: var(--ink);
+    border: none; border-radius: 10px;
+    padding: .9rem 2rem; font-size: .95rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    font-family: 'Outfit', sans-serif; transition: all .2s;
+  }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,160,32,.4); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,.5);
+    padding: 2rem; text-align: center; font-size: .82rem;
+  }
+  footer strong { color: var(--teal-mid); }
+
+  /* ════════════════════════════════════════
+     PROFILE PAGE
+  ════════════════════════════════════════ */
+  .profile-view { background: var(--bg); }
+
+  .profile-header {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-mid) 100%);
+    padding: 5.5rem 2rem 3rem;
+    position: relative; overflow: hidden;
+  }
+  .profile-header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(255,255,255,.07), transparent 60%);
+  }
+  .ph-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: flex-end; gap: 2rem;
+    position: relative; z-index: 1; flex-wrap: wrap;
+  }
+  .avatar {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: var(--gold); display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit',sans-serif; font-size: 2rem; font-weight: 800; color: var(--ink);
+    border: 4px solid rgba(255,255,255,.3); flex-shrink: 0;
+  }
+  .ph-info { flex: 1; }
+  .ph-info .cohort-badge {
+    display: inline-block; background: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.9); border-radius: 6px;
+    padding: .2rem .7rem; font-size: .75rem; font-weight: 600;
+    margin-bottom: .5rem; letter-spacing: .5px;
+  }
+  .ph-info h1 { font-size: clamp(1.5rem, 3vw, 2rem); color: white; line-height: 1.2; }
+  .ph-info p { color: rgba(255,255,255,.75); font-size: .9rem; margin-top: .3rem; }
+  .back-btn {
+    display: flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    color: white; border-radius: 8px; padding: .5rem 1rem;
+    font-size: .85rem; cursor: pointer; transition: background .2s;
+    font-family: 'Plus Jakarta Sans',sans-serif; font-weight: 500; margin-left: auto;
+  }
+  .back-btn:hover { background: rgba(255,255,255,.25); }
+
+  /* status pill */
+  .status-pill {
+    display: inline-flex; align-items: center; gap: .4rem;
+    border-radius: 99px; padding: .3rem .9rem;
+    font-size: .78rem; font-weight: 700; margin-top: .6rem;
+  }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-4 { background: rgba(22,163,74,.15); color: #15803d; }
+  .status-4 .dot { background: #16a34a; }
+  .status-3 { background: rgba(37,99,235,.15); color: #1d4ed8; }
+  .status-3 .dot { background: #3b82f6; }
+  .status-2 { background: rgba(217,119,6,.15); color: #b45309; }
+  .status-2 .dot { background: #d97706; }
+  .status-1 { background: rgba(220,38,38,.15); color: #b91c1c; }
+  .status-1 .dot { background: #dc2626; }
+  .status-5 { background: rgba(124,58,237,.15); color: #6d28d9; }
+  .status-5 .dot { background: #7c3aed; }
+
+  /* PROFILE TABS */
+  .profile-tabs {
+    background: white; border-bottom: 2px solid var(--border);
+    position: sticky; top: 64px; z-index: 50;
+  }
+  .tabs-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 1rem 1.4rem; border: none; background: transparent;
+    font-family: 'Plus Jakarta Sans',sans-serif; font-size: .9rem; font-weight: 500;
+    color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; white-space: nowrap; transition: all .2s;
+  }
+  .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 700; }
+  .tab-btn:hover:not(.active) { color: var(--ink); }
+
+  /* PROFILE CONTENT */
+  .profile-content {
+    max-width: 1100px; margin: 0 auto;
+    padding: 2rem 2rem 5rem;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 1.8rem;
+    margin-bottom: 1.5rem; box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-family: 'Outfit',sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .card-title .icon-sq {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--teal-light); display: flex;
+    align-items: center; justify-content: center;
+    color: var(--teal); flex-shrink: 0;
+  }
+
+  /* Info grid */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; }
+  .info-item label {
+    display: block; font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .6px;
+    color: var(--muted); margin-bottom: .25rem;
+  }
+  .info-item span {
+    font-size: .95rem; color: var(--ink); font-weight: 500;
+  }
+
+  /* Metric cards */
+  .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .metric-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.4rem;
+    text-align: center; box-shadow: var(--shadow);
+  }
+  .metric-card .value {
+    font-family: 'Outfit',sans-serif; font-size: 1.8rem;
+    font-weight: 800; color: var(--teal);
+    display: block; margin-bottom: .25rem;
+  }
+  .metric-card .label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+  .metric-card.gold .value { color: var(--gold); }
+  .metric-card.green .value { color: var(--success); }
+  .metric-card.ink .value { color: var(--ink); }
+
+  /* Chart containers */
+  .chart-wrap { position: relative; height: 220px; }
+  .chart-wrap-sm { position: relative; height: 180px; }
+  .charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th {
+    background: var(--teal-light); color: var(--teal-dark);
+    font-family: 'Outfit',sans-serif; font-weight: 700;
+    font-size: .75rem; text-transform: uppercase; letter-spacing: .5px;
+    padding: .7rem 1rem; text-align: left;
+  }
+  td { padding: .75rem 1rem; border-bottom: 1px solid var(--border); color: var(--ink-mid); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--teal-light); }
+
+  /* Mentor card */
+  .mentor-card {
+    background: linear-gradient(135deg, var(--teal-light), rgba(255,255,255,.5));
+    border: 1px solid rgba(27,127,121,.2);
+    border-radius: var(--radius); padding: 1.8rem;
+    display: flex; gap: 1.5rem; align-items: flex-start;
+  }
+  .mentor-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--teal); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit',sans-serif; font-size: 1.3rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .mentor-info h4 { font-size: 1.05rem; margin-bottom: .25rem; }
+  .mentor-info .role { font-size: .82rem; color: var(--teal); font-weight: 600; margin-bottom: .7rem; }
+  .mentor-contacts { display: flex; flex-direction: column; gap: .4rem; }
+  .mentor-contacts a {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .85rem; color: var(--teal-dark); text-decoration: none; font-weight: 500;
+  }
+  .mentor-contacts a:hover { text-decoration: underline; }
+
+  /* Progress bar */
+  .prog-bar-wrap { margin-bottom: 1rem; }
+  .prog-label { display: flex; justify-content: space-between; font-size: .82rem; color: var(--muted); margin-bottom: .4rem; }
+  .prog-label strong { color: var(--ink); }
+  .prog-track { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+  .prog-fill { border-radius: 99px; height: 100%; transition: width 1s ease; }
+  .prog-teal { background: var(--teal); }
+  .prog-gold { background: var(--gold); }
+  .prog-green { background: var(--success); }
+
+  /* Tags */
+  .tag {
+    display: inline-block; border-radius: 6px;
+    padding: .2rem .6rem; font-size: .76rem; font-weight: 600; margin: .2rem;
+  }
+  .tag-teal { background: var(--teal-light); color: var(--teal-dark); }
+  .tag-gold { background: var(--gold-light); color: #92400e; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-gray  { background: #f3f4f6; color: var(--muted); }
+
+  /* Quote / callout */
+  .callout {
+    background: var(--teal-light); border-left: 4px solid var(--teal);
+    border-radius: 0 10px 10px 0; padding: 1.2rem 1.5rem;
+    font-size: .9rem; color: var(--ink-mid); line-height: 1.7;
+    font-style: italic; margin: 1.2rem 0;
+  }
+
+  /* Timeline */
+  .timeline { list-style: none; position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content: ''; position: absolute; left: .6rem; top: 0; bottom: 0;
+    width: 2px; background: var(--border);
+  }
+  .timeline li { position: relative; margin-bottom: 1.2rem; }
+  .timeline li::before {
+    content: ''; position: absolute; left: -1.6rem; top: .3rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--teal); border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--teal);
+  }
+  .timeline li .tl-date { font-size: .75rem; color: var(--muted); font-weight: 600; }
+  .timeline li .tl-text { font-size: .9rem; color: var(--ink-mid); margin-top: .1rem; }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .cohort-grid { grid-template-columns: 1fr 1fr; }
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .charts-2col { grid-template-columns: 1fr; }
+    .cta-band { flex-direction: column; text-align: center; }
+  }
+  @media (max-width: 540px) {
+    .cohort-grid { grid-template-columns: 1fr; }
+    .nav { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ HOME VIEW ════════════════════════ -->
+<div id="homeView" class="view active">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="dot">MTA</div>
+      <span>Mereka Tracking App</span>
+    </div>
+    <button class="nav-cta" onclick="scrollToPortal()">My Profile →</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge"><span class="pulse"></span> Program Active · 6 Cohorts</div>
+        <h1>MTA <span>Participant</span> Tracking Portal</h1>
+        <p>Equipping underserved youths with essential digital skills, career planning, and job readiness across Malaysia.</p>
+        <button class="hero-btn" onclick="scrollToPortal()">
+          View My Profile
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="hero-stats">
+          <div class="hstat"><strong>210</strong><span>Participants</span></div>
+          <div class="hstat"><strong>6</strong><span>Cohorts</span></div>
+          <div class="hstat"><strong>90%</strong><span>Employment Target</span></div>
+          <div class="hstat"><strong>RM2K+</strong><span>Income Goal</span></div>
+        </div>
+      </div>
+
+      <!-- PORTAL LOGIN CARD -->
+      <div id="portalCard" class="portal-card">
+        <h3>Access Your Profile</h3>
+        <p>Enter your registered email address to view your personalised tracking dashboard.</p>
+        <div class="input-group">
+          <span class="icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <input type="email" id="emailInput" placeholder="yourname@email.com" onkeydown="if(event.key==='Enter')login()" />
+        </div>
+        <button class="btn-primary" onclick="login()">Access Dashboard →</button>
+        <div class="error-msg" id="errorMsg">❌ Email not found. Please use your registered program email.</div>
+        <div class="lock-note">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Your data is private. Only you can access your profile.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAM OVERVIEW -->
+  <section style="background:white;">
+    <div class="section-inner">
+      <span class="chip">Program Overview</span>
+      <h2 class="section-title">Building Futures Through<br>Digital Empowerment</h2>
+      <p class="section-sub">Through comprehensive training sessions, mentorship programs, and strategic partnerships with industry players and educational institutions, MTA enhances employability and cultivates a proactive, innovative mindset.</p>
+
+      <div class="overview-grid">
+        <div class="ov-card">
+          <h4>🎯 Secure Employment Pathways</h4>
+          <p>Provide underserved youth with comprehensive digital & career development training to secure meaningful employment.</p>
+          <div class="indicator">
+            Indicator: At least <strong>90% of participants</strong> will secure career-fitting employment <strong>above RM2,000</strong> through increased employability and confidence.
+          </div>
+        </div>
+        <div class="ov-card" style="background:var(--teal-dark);">
+          <h4>🌱 Foster Long-Term Resilience</h4>
+          <p>Build resilience and growth mindset through community building, peer support, and mentorship at every stage.</p>
+          <div class="indicator">
+            Indicator: Facilitate <strong>10 peer support gatherings</strong> per month and achieve <strong>at least 70% increase</strong> in participants reporting enhanced growth mindset and resilience.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COHORT OVERVIEW -->
+  <section class="cohort-section">
+    <div class="section-inner">
+      <span class="chip">Cohort Overview</span>
+      <h2 class="section-title">Total Learners: 210 Participants</h2>
+      <p class="section-sub">Active cohorts across Peninsular Malaysia and East Malaysia, at various stages of the program journey.</p>
+
+      <div class="cohort-grid">
+        <div class="cohort-card">
+          <div class="c-num">Cohort 1</div>
+          <h4>Klang Valley (Selangor)</h4>
+          <p>Started: May 2025 · 49 participants</p>
+          <span class="c-tag">Income Monitoring</span>
+        </div>
+        <div class="cohort-card">
+          <div class="c-num">Cohort 2</div>
+          <h4>Sarawak</h4>
+          <p>Started: July 2025 · 39 participants</p>
+          <span class="c-tag">Career Support · Mentorship · Income Monitoring</span>
+        </div>
+        <div class="cohort-card">
+          <div class="c-num">Cohort 3</div>
+          <h4>Sabah</h4>
+          <p>Started: October 2025 · 41 participants</p>
+          <span class="c-tag">Career Support · Mentorship · Income Monitoring</span>
+        </div>
+        <div class="cohort-card">
+          <div class="c-num">Cohort 4</div>
+          <h4>Terengganu</h4>
+          <p>Started: November 2025 · 27 participants</p>
+          <span class="c-tag">Career Support · Mentorship · Income Monitoring</span>
+        </div>
+        <div class="cohort-card">
+          <div class="c-num">Cohort 5</div>
+          <h4>Johor</h4>
+          <p>Started: December 2025 · 27 participants</p>
+          <span class="c-tag">Career Support · Mentorship · Income Monitoring</span>
+        </div>
+        <div class="cohort-card">
+          <div class="c-num">Cohort 6</div>
+          <h4>Johor Skills</h4>
+          <p>Started: February 2026 · 27 participants</p>
+          <span class="c-tag">Career Support · Mentorship · Income Monitoring</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <div style="padding:3rem 2rem;">
+    <div class="cta-band">
+      <div>
+        <h2>Ready to check your progress?</h2>
+        <p>Log in with your registered email to view your personalised dashboard, income tracker, and mentor information.</p>
+      </div>
+      <button class="btn-gold" onclick="scrollToPortal()">Access My Dashboard</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 <strong>Mereka</strong> · MTA Program Participant Portal · All data is confidential and accessible only by registered participants.</p>
+  </footer>
+</div>
+
+<!-- ════════════════════════ PROFILE VIEW ════════════════════════ -->
+<div id="profileView" class="view profile-view">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="dot">MTA</div>
+      <span>Mereka Tracking App</span>
+    </div>
+    <button class="back-btn" onclick="logout()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Sign Out
+    </button>
+  </nav>
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="ph-inner">
+      <div class="avatar" id="participantAvatar">ND</div>
+      <div class="ph-info">
+        <span class="cohort-badge" id="participantCohort">Cohort 1 · Selangor</span>
+        <h1 id="participantName">Nur Dzatin Nithaaqain Binti Jamaludin</h1>
+        <p id="participantDegree">Diploma in Business Study</p>
+        <span class="status-pill status-4" id="statusPill">
+          <span class="dot"></span>
+          <span id="statusText">Stable Job</span>
+        </span>
+      </div>
+      <button class="back-btn" onclick="logout()">← Back to Home</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="profile-tabs">
+    <div class="tabs-inner">
+      <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+      <button class="tab-btn" onclick="switchTab('income')">Income Tracker</button>
+      <button class="tab-btn" onclick="switchTab('mentor')">Mentor Info</button>
+      <button class="tab-btn" onclick="switchTab('notes')">Progress Notes</button>
+    </div>
+  </div>
+
+  <div class="profile-content">
+
+    <!-- TAB: OVERVIEW -->
+    <div class="tab-panel active" id="tab-overview">
+
+      <!-- Key Metrics -->
+      <div class="metrics-row">
+        <div class="metric-card green">
+          <span class="value">RM 4,300</span>
+          <span class="label">Current Monthly Income</span>
+        </div>
+        <div class="metric-card gold" id="incomeTargetCard">
+          <span class="value" id="incomeTargetValue">+115%</span>
+          <span class="label" id="incomeTargetLabel">Above RM 2,000 Target</span>
+        </div>
+        <div class="metric-card">
+          <span class="value">4 / 5</span>
+          <span class="label">Status Score</span>
+        </div>
+        <div class="metric-card ink">
+          <span class="value">Yes</span>
+          <span class="label">Offer Letter Received</span>
+        </div>
+      </div>
+
+      <!-- Personal Info -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </span>
+          Personal Information
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Full Name</label>
+            <span>Nur Dzatin Nithaaqain Binti Jamaludin</span>
+          </div>
+          <div class="info-item">
+            <label>Cohort / Location</label>
+            <span>Selangor (Cohort 1)</span>
+          </div>
+          <div class="info-item">
+            <label>Qualification</label>
+            <span>Diploma in Business Study</span>
+          </div>
+          <div class="info-item">
+            <label>Phone / WhatsApp</label>
+            <span>+60182514266</span>
+          </div>
+          <div class="info-item">
+            <label>Email</label>
+            <span>participant@mta.my</span>
+          </div>
+          <div class="info-item">
+            <label>Engagement Status</label>
+            <span><span class="tag tag-green">Active</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employment Status -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </span>
+          Current Employment
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Status</label>
+            <span><span class="tag tag-green">Employed — Career Fitting</span></span>
+          </div>
+          <div class="info-item">
+            <label>Employer</label>
+            <span>Assunta Hospital</span>
+          </div>
+          <div class="info-item">
+            <label>Job Role</label>
+            <span>Drug Purchaser</span>
+          </div>
+          <div class="info-item">
+            <label>Industry</label>
+            <span>Health / Healthcare</span>
+          </div>
+          <div class="info-item">
+            <label>Job Obtained After MTA?</label>
+            <span>No (Pre-existing)</span>
+          </div>
+          <div class="info-item">
+            <label>Career Fitting?</label>
+            <span><span class="tag tag-teal">Yes</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Income Bar Chart -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
+          Income Journey
+        </div>
+        <div class="chart-wrap">
+          <canvas id="incomeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Status Progress -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          Program Progress
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-label"><strong>Income Target Achievement (RM2,000 goal)</strong><span>RM 4,300 / RM 2,000</span></div>
+          <div class="prog-track"><div class="prog-fill prog-green" style="width:100%"></div></div>
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-label"><strong>Status Score</strong><span>4 / 5</span></div>
+          <div class="prog-track"><div class="prog-fill prog-teal" style="width:80%"></div></div>
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-label"><strong>Career Fit</strong><span>Career-Fitting Role</span></div>
+          <div class="prog-track"><div class="prog-fill prog-gold" style="width:100%"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-overview -->
+
+    <!-- TAB: INCOME TRACKER -->
+    <div class="tab-panel" id="tab-income">
+
+      <!-- Summary cards -->
+      <div class="metrics-row">
+        <div class="metric-card green">
+          <span class="value">RM 4,300</span>
+          <span class="label">Income Now (Monthly)</span>
+        </div>
+        <div class="metric-card">
+          <span class="value">RM 2,800</span>
+          <span class="label">Income Before Program</span>
+        </div>
+        <div class="metric-card gold">
+          <span class="value">+RM 1,500</span>
+          <span class="label">Net Income Increase</span>
+        </div>
+        <div class="metric-card ink">
+          <span class="value">2,900+</span>
+          <span class="label">Income Band (RM)</span>
+        </div>
+      </div>
+
+      <div class="charts-2col">
+        <!-- Income Comparison Chart -->
+        <div class="card">
+          <div class="card-title">
+            <span class="icon-sq">📊</span> Before vs After Income
+          </div>
+          <div class="chart-wrap-sm">
+            <canvas id="compareChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Employment Status Donut -->
+        <div class="card">
+          <div class="card-title">
+            <span class="icon-sq">💼</span> Employment Status
+          </div>
+          <div class="chart-wrap-sm">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Income Details Table -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">📋</span> Income Tracker Details
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Call Status</td><td>Completed (Text & Call)</td></tr>
+            <tr><td>Employment Status</td><td><span class="tag tag-green">Bekerja Sepenuh Masa (Full-Time)</span></td></tr>
+            <tr><td>Industry</td><td>Health / Healthcare</td></tr>
+            <tr><td>Organisation</td><td>Assunta Hospital</td></tr>
+            <tr><td>Job Role</td><td>Drug Purchaser</td></tr>
+            <tr><td>Income Range</td><td>RM 2,900 and above</td></tr>
+            <tr><td>Exact Income</td><td><strong>RM 4,300 / month</strong></td></tr>
+            <tr><td>Status Score</td><td><span class="tag tag-teal">4 — Stable Job</span></td></tr>
+            <tr><td>Follow-up Status</td><td>First Follow-up Completed</td></tr>
+            <tr><td>Offer Letter</td><td><span class="tag tag-green">Received</span></td></tr>
+            <tr><td>PIC</td><td>Marlisa</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Job Market Feedback -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">💬</span> Job Market Feedback
+        </div>
+        <div class="callout">
+          "Keadaan job market sekarang I rasa okay, because I ada nampak few good vacancy advertised. Feedback untuk I — Mereka dengan mentor I Dennis, sangat membantu dalam memastikan saya 'on track' samada dalam kehidupan atau kerjaya."
+        </div>
+        <div style="margin-top:1rem;">
+          <strong style="font-size:.85rem; color:var(--ink-mid);">Key Challenges:</strong>
+          <p style="font-size:.88rem; color:var(--muted); margin-top:.3rem;">No major challenges reported. Income target exceeded.</p>
+        </div>
+        <div style="margin-top:1rem;">
+          <strong style="font-size:.85rem; color:var(--ink-mid);">Suggestions to Mereka:</strong>
+          <div class="callout" style="margin-top:.5rem; font-size:.85rem;">
+            "I punya suggestion if you guys can collab more with MyFutureJob to increase peluang MTA mendapatkan kerja. In future I harap MTA mempunyai capacity untuk enroll us in Professional Cert."
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-income -->
+
+    <!-- TAB: MENTOR INFO -->
+    <div class="tab-panel" id="tab-mentor">
+
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">🤝</span> Your Assigned Mentor
+        </div>
+        <div class="mentor-card">
+          <div class="mentor-avatar">DT</div>
+          <div class="mentor-info">
+            <h4>Dennis Tan Jie Shen</h4>
+            <div class="role">Industry Mentor · Selangor Cohort</div>
+            <div class="mentor-contacts">
+              <a href="mailto:dennistanjs@hotmail.com">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                dennistanjs@hotmail.com
+              </a>
+              <a href="tel:+60165450735">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 5.35 5.35l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+                +60165450735
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mentees in same group -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">👥</span> Your Mentor Group
+        </div>
+        <p style="font-size:.88rem; color:var(--muted); margin-bottom:1rem;">Other mentees in your group under Dennis Tan Jie Shen:</p>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Nur Dzatin Nithaaqain Binti Jamaludin <span class="tag tag-teal">You</span></td><td><span class="tag tag-green">Stable Job</span></td></tr>
+            <tr><td>2</td><td>Nur Sabrina Ramlan</td><td><span class="tag tag-gold">Job Searching</span></td></tr>
+            <tr><td>3</td><td>Nur Farzana Rusli</td><td><span class="tag tag-gray">Pending Update</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mentorship Tips -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">💡</span> Mentorship Guidelines
+        </div>
+        <ul style="font-size:.9rem; color:var(--ink-mid); line-height:2; padding-left:1.2rem;">
+          <li>Attend all scheduled mentorship sessions on time.</li>
+          <li>Reach out to your mentor if you need career guidance or face challenges at work.</li>
+          <li>Share updates on your employment status each quarter with your PIC (Marlisa).</li>
+          <li>Participate in peer support gatherings to build community resilience.</li>
+          <li>Provide feedback on your MTA journey to help improve the program for future cohorts.</li>
+        </ul>
+      </div>
+
+    </div><!-- /tab-mentor -->
+
+    <!-- TAB: PROGRESS NOTES -->
+    <div class="tab-panel" id="tab-notes">
+
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">📅</span> Progress Timeline
+        </div>
+        <ul class="timeline">
+          <li>
+            <div class="tl-date">May 2025 — Program Start</div>
+            <div class="tl-text">Enrolled in Cohort 1 (Selangor / Klang Valley). Pre-program income: RM 2,800/month.</div>
+          </li>
+          <li>
+            <div class="tl-date">Mid 2025 — Training Phase</div>
+            <div class="tl-text">Completed digital skills & career development bootcamp. Assigned to mentor Dennis Tan Jie Shen.</div>
+          </li>
+          <li>
+            <div class="tl-date">Q3 2025 — Income Monitoring Begins</div>
+            <div class="tl-text">First income check-in completed. Employed full-time at Assunta Hospital as Drug Purchaser. Income now RM 4,300/month.</div>
+          </li>
+          <li>
+            <div class="tl-date">Q4 2025 — First Follow-Up</div>
+            <div class="tl-text">Follow-up call completed. Status Score: 4 (Stable Job). Offer letter received. PIC: Marlisa.</div>
+          </li>
+          <li>
+            <div class="tl-date">2026 — Ongoing Support</div>
+            <div class="tl-text">Expressed interest in Professional Certification enrollment. Suggested MTA-MyFutureJob collaboration. Continuing peer support sessions.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Notes from PIC -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">📝</span> Notes from Program Team
+        </div>
+        <div class="callout">
+          "In future I harap MTA mempunyai capacity untuk enroll us in Professional Cert, bagi I ia akan sangat membantu."
+          <br><br>
+          Feedback: Very positive trajectory. Income exceeds RM2,000 target. Career-fitting employment secured. Participant is highly engaged and provided detailed constructive feedback for the program.
+        </div>
+        <div style="margin-top:1rem; display:flex; flex-wrap:wrap; gap:.5rem;">
+          <span class="tag tag-green">Income Target Exceeded</span>
+          <span class="tag tag-teal">Career-Fitting Employment</span>
+          <span class="tag tag-teal">Offer Letter Received</span>
+          <span class="tag tag-gold">Peer Support Active</span>
+        </div>
+      </div>
+
+      <!-- Support Needed -->
+      <div class="card">
+        <div class="card-title">
+          <span class="icon-sq">🙋</span> Support Requested
+        </div>
+        <p style="font-size:.9rem; color:var(--ink-mid);">Based on your responses, the following support has been flagged:</p>
+        <ul style="margin-top:.8rem; font-size:.88rem; color:var(--ink-mid); line-height:2; padding-left:1.2rem;">
+          <li>Collaboration with <strong>MyFutureJob</strong> for enhanced job placement recognition.</li>
+          <li>Enrollment in a <strong>Professional Certification</strong> program aligned with healthcare / procurement.</li>
+          <li>Continued mentorship for career growth to Status 5 (Career Growth).</li>
+        </ul>
+      </div>
+
+    </div><!-- /tab-notes -->
+
+  </div><!-- /profile-content -->
+</div><!-- /profileView -->
+
+
+<script>
+/* ─────────────────────────────────────────
+   PARTICIPANT DATABASE
+   In production: replace with backend / CMS
+   Emails act as access keys (passwords)
+   Add one entry per participant.
+───────────────────────────────────────── */
+const PARTICIPANTS = {
+  // DEMO PARTICIPANT — Selangor
+  "nurdzatin@mta.my": {
+    name: "Nur Dzatin Nithaaqain Binti Jamaludin",
+    initials: "ND",
+    cohort: "Cohort 1 · Selangor",
+    degree: "Diploma in Business Study",
+    statusScore: 4,
+    incomeNow: 4300,
+    statusText: "Stable Job",
+    statusClass: "status-4"
+  },
+  // Add more participants below following the same structure:
+  // "participant@email.com": { name: "...", initials: "XX", cohort: "...", degree: "...", statusScore: N, statusText: "...", statusClass: "status-N" }
+
+  // SABAH SAMPLES (emails from spreadsheet)
+  "abolsaine@gmail.com": {
+    incomeNow: 0,
+    name: "Avelle Shayne Albin",
+    initials: "AS",
+    cohort: "Cohort 3 · Sabah",
+    degree: "—",
+    statusScore: 2,
+    statusText: "Job Searching",
+    statusClass: "status-2"
+  },
+  "brandonmagrine@gmail.com": {
+    incomeNow: 0,
+    name: "Brandon Magrine",
+    initials: "BM",
+    cohort: "Cohort 3 · Sabah",
+    degree: "Ijazah Sarjana Muda Sains Makanan",
+    statusScore: 2,
+    statusText: "Job Searching",
+    statusClass: "status-2"
+  },
+  "diviannadaimin@gmail.com": {
+    incomeNow: 2000,
+    name: "Divianna Daimin",
+    initials: "DD",
+    cohort: "Cohort 3 · Sabah",
+    degree: "Master of Human Capital Management",
+    statusScore: 3,
+    statusText: "Recently Employed",
+    statusClass: "status-3"
+  },
+  // TERENGGANU SAMPLES
+  "qayrol18@gmail.com": {
+    incomeNow: 0,
+    name: "Ahmad Khairul Bahari Bin Othman",
+    initials: "AK",
+    cohort: "Cohort 4 · Terengganu",
+    degree: "Diploma Electronic (Computer) Engineering",
+    statusScore: 2,
+    statusText: "Job Searching",
+    statusClass: "status-2"
+  },
+  "aisyahnurhanan.student@gmail.com": {
+    incomeNow: 0,
+    name: "Aisyah Nurhanan Binti Mohd Rodzi",
+    initials: "AN",
+    cohort: "Cohort 4 · Terengganu",
+    degree: "Bachelor's Degree Applied Science (Maritime Technology)",
+    statusScore: 2,
+    statusText: "Job Searching",
+    statusClass: "status-2"
+  },
+  // JOHOR SAMPLES
+  "adibahhassan2003@gmail.com": {
+    incomeNow: 0,
+    name: "Adibah Binti Hassan",
+    initials: "AH",
+    cohort: "Cohort 5 · Johor",
+    degree: "English for International Communication",
+    statusScore: 2,
+    statusText: "Job Searching",
+    statusClass: "status-2"
+  }
+};
+
+/* ─────────────────────────────────────────
+   AUTH LOGIC
+───────────────────────────────────────── */
+function login() {
+  const email = document.getElementById('emailInput').value.trim().toLowerCase();
+  const errEl  = document.getElementById('errorMsg');
+
+  if (!email) {
+    errEl.textContent = '⚠️ Please enter your email address.';
+    errEl.style.display = 'block'; return;
+  }
+
+  if (PARTICIPANTS[email]) {
+    errEl.style.display = 'none';
+    showProfile(email);
+  } else {
+    errEl.textContent = '❌ Email not found. Please use your registered program email.';
+    errEl.style.display = 'block';
+  }
+}
+
+function showProfile(email) {
+  const p = PARTICIPANTS[email];
+
+  // Update header
+  document.getElementById('participantAvatar').textContent = p.initials;
+  document.getElementById('participantCohort').textContent  = p.cohort;
+  document.getElementById('participantName').textContent    = p.name;
+  document.getElementById('participantDegree').textContent  = p.degree;
+
+  // Status pill
+  const pill = document.getElementById('statusPill');
+  pill.className = `status-pill ${p.statusClass}`;
+  document.getElementById('statusText').textContent = p.statusText;
+
+  // Dynamic income target card
+  const TARGET = 2000;
+  const income = p.incomeNow || 0;
+  const valEl   = document.getElementById("incomeTargetValue");
+  const labelEl = document.getElementById("incomeTargetLabel");
+  const cardEl  = document.getElementById("incomeTargetCard");
+  if (income >= TARGET && income > 0) {
+    const pct = Math.round(((income - TARGET) / TARGET) * 100);
+    valEl.textContent   = "+" + pct + "%";
+    labelEl.textContent = "Above RM 2,000 Target";
+    cardEl.className    = "metric-card gold";
+  } else if (income > 0) {
+    const pct = Math.round((income / TARGET) * 100);
+    valEl.textContent   = pct + "%";
+    labelEl.textContent = "Progress to RM 2,000 Goal";
+    cardEl.className    = "metric-card";
+  } else {
+    valEl.textContent   = "—";
+    labelEl.textContent = "Income Not Yet Recorded";
+    cardEl.className    = "metric-card";
+  }
+
+  // Switch views
+  document.getElementById('homeView').classList.remove('active');
+  document.getElementById('profileView').classList.add('active');
+  window.scrollTo(0,0);
+
+  // Reset to first tab
+  switchTab('overview');
+
+  // Build charts (slight delay for canvas to render)
+  setTimeout(buildCharts, 100);
+}
+
+function logout() {
+  document.getElementById('profileView').classList.remove('active');
+  document.getElementById('homeView').classList.add('active');
+  document.getElementById('emailInput').value = '';
+  window.scrollTo(0,0);
+}
+
+function scrollToPortal() {
+  document.getElementById('portalCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event && event.target && event.target.classList.add('active');
+
+  // rebuild correct tab button active state
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    if (btn.getAttribute('onclick').includes("'" + name + "'")) btn.classList.add('active');
+  });
+}
+
+/* ─────────────────────────────────────────
+   CHARTS
+───────────────────────────────────────── */
+let charts = {};
+function buildCharts() {
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+
+  const teal     = '#1b7f79';
+  const tealLight= '#2aa89f';
+  const gold     = '#e8a020';
+  const green    = '#16a34a';
+  const ink      = '#1a1a2e';
+  const muted    = '#d1d5db';
+
+  const baseFont = { family: "'Plus Jakarta Sans', sans-serif", size: 12 };
+
+  // 1. Income Journey Line Chart
+  const icCtx = document.getElementById('incomeChart');
+  if (icCtx) {
+    charts.income = new Chart(icCtx, {
+      type: 'line',
+      data: {
+        labels: ['Before MTA', 'Month 3', 'Month 6 (Check-In)', 'Current'],
+        datasets: [{
+          label: 'Income (RM)',
+          data: [2800, 2800, 4000, 4300],
+          borderColor: teal,
+          backgroundColor: 'rgba(27,127,121,.08)',
+          pointBackgroundColor: teal,
+          pointRadius: 6,
+          pointHoverRadius: 9,
+          tension: .35, fill: true, borderWidth: 2.5
+        }, {
+          label: 'Target (RM 2,000)',
+          data: [2000, 2000, 2000, 2000],
+          borderColor: gold,
+          borderDash: [6,4], borderWidth: 2,
+          pointRadius: 0, fill: false
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { font: baseFont, boxWidth: 16 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` RM ${ctx.parsed.y.toLocaleString()}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false, min: 1500,
+            ticks: { font: baseFont, callback: v => 'RM ' + v.toLocaleString() },
+            grid: { color: 'rgba(0,0,0,.06)' }
+          },
+          x: { ticks: { font: baseFont }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // 2. Before vs After Bar Chart
+  const ccCtx = document.getElementById('compareChart');
+  if (ccCtx) {
+    charts.compare = new Chart(ccCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Before MTA', 'Current', 'Target'],
+        datasets: [{
+          label: 'Monthly Income (RM)',
+          data: [2800, 4300, 2000],
+          backgroundColor: [muted, green, gold],
+          borderRadius: 8, borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' RM ' + ctx.parsed.y.toLocaleString() } } },
+        scales: {
+          y: { ticks: { font: baseFont, callback: v => 'RM ' + v.toLocaleString() }, grid: { color: 'rgba(0,0,0,.05)' } },
+          x: { ticks: { font: baseFont }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // 3. Employment Status Donut
+  const scCtx = document.getElementById('statusChart');
+  if (scCtx) {
+    charts.status = new Chart(scCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Career-Fitting', 'Non-Career Fitting', 'Unemployed / Studying'],
+        datasets: [{
+          data: [58, 22, 20],
+          backgroundColor: [teal, gold, muted],
+          borderWidth: 0, hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: baseFont, boxWidth: 14, padding: 12 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+        }
+      }
+    });
+  }
+}
+</script>
+</body>
+</html>
