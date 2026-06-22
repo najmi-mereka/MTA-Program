@@ -162,8 +162,99 @@ tr:hover td{background:var(--teal-light)}
   .c-grid{grid-template-columns:1fr 1fr}
   .mr{grid-template-columns:1fr 1fr}
   .cta-band{flex-direction:column;text-align:center}
+  .ph-inner{flex-direction:column;align-items:flex-start;gap:1rem}
+  .avatar{width:70px;height:70px;font-size:1.6rem}
 }
-@media(max-width:540px){.c-grid{grid-template-columns:1fr}.nav{padding:0 1rem}}
+@media(max-width:600px){
+  /* NAV */
+  .nav{padding:0 1rem;height:56px}
+  .nav-logo span{display:none}
+  .nav-cta{padding:.4rem .8rem;font-size:.8rem}
+  .back-btn{padding:.4rem .7rem;font-size:.78rem;gap:.3rem}
+  .back-btn svg{width:12px;height:12px}
+
+  /* HERO */
+  .hero{padding:5rem 1.2rem 3rem}
+  .hero h1{font-size:1.7rem}
+  .hero>*>div>p{font-size:.92rem}
+  .hero-btn{padding:.85rem 1.4rem;font-size:.9rem}
+  .hero-stats{gap:.6rem}
+  .hstat{padding:.6rem .8rem;min-width:70px}
+  .hstat strong{font-size:1.2rem}
+  .hstat span{font-size:.68rem}
+  .portal-card{padding:1.6rem}
+  .portal-card h3{font-size:1.1rem}
+
+  /* HOME SECTIONS */
+  section{padding:3rem 1.2rem}
+  .st{font-size:1.4rem}
+  .c-grid{grid-template-columns:1fr}
+  .cta-band{padding:1.8rem;border-radius:14px}
+  .cta-band h2{font-size:1.2rem}
+  .btn-gold{width:100%;text-align:center}
+
+  /* PROFILE HEADER */
+  .profile-header{padding:4.5rem 1.2rem 2rem}
+  .ph-inner{gap:.8rem}
+  .avatar{width:58px;height:58px;font-size:1.3rem;border-width:3px}
+  .ph-info h1{font-size:1.1rem}
+  .ph-info>p{font-size:.8rem}
+  .sp{font-size:.72rem;padding:.25rem .7rem}
+  .cohort-badge{font-size:.68rem}
+
+  /* PROFILE NAV BUTTONS */
+  #homeBtn span, #logoutBtn span{display:none}
+
+  /* TABS */
+  .profile-tabs{top:56px}
+  .tab-btn{padding:.75rem .9rem;font-size:.8rem}
+
+  /* METRICS ROW */
+  .mr{grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem}
+  .mc{padding:1rem .8rem}
+  .mc .v{font-size:1.3rem}
+  .mc .l{font-size:.7rem}
+
+  /* CARDS */
+  .card{padding:1.2rem;margin-bottom:1rem}
+  .ct{font-size:.9rem;margin-bottom:.9rem}
+  .ct .isq{width:26px;height:26px}
+
+  /* INFO GRID */
+  .ig{grid-template-columns:1fr;gap:.8rem}
+  .ii label{font-size:.65rem}
+  .ii span{font-size:.85rem}
+
+  /* TABLE */
+  table{font-size:.8rem}
+  th{font-size:.68rem;padding:.55rem .7rem}
+  td{padding:.6rem .7rem}
+
+  /* MENTOR CARD */
+  .mentor-card{flex-direction:column;gap:1rem;padding:1.2rem}
+  .m-avatar{width:52px;height:52px;font-size:1.1rem}
+  .m-info h4{font-size:.95rem}
+  .m-contacts a{font-size:.8rem}
+
+  /* PROGRESS BARS */
+  .pb-lbl{font-size:.75rem}
+  .pb-wrap{margin-bottom:.8rem}
+
+  /* SURVEY BANNER */
+  .survey-banner{flex-direction:column;gap:.8rem;padding:1.1rem}
+  .sb-icon{font-size:1.4rem}
+  .survey-banner strong{font-size:.88rem}
+  .survey-banner p{font-size:.8rem}
+
+  /* CALLOUT */
+  .callout{font-size:.85rem;padding:1rem 1.1rem}
+
+  /* PROFILE CONTENT */
+  .pc{padding:1.2rem 1rem 4rem}
+
+  /* CHARTS */
+  canvas{height:180px!important}
+}
 </style>
 </head>
 <body>
@@ -248,11 +339,11 @@ tr:hover td{background:var(--teal-light)}
     <div style="display:flex;align-items:center;gap:.6rem">
       <button class="back-btn" id="homeBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Home
+        <span>Home</span>
       </button>
       <button class="back-btn" id="logoutBtn" style="background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.3)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Sign Out
+        <span>Sign Out</span>
       </button>
     </div>
   </nav>
